@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Revit Add-In Title")]
-[assembly: AssemblyDescription("Revit Add-In Description")]
+[assembly: AssemblyTitle("QRCode-Revit2013")]
+[assembly: AssemblyDescription("QRCode generator for Revit")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Autodesk Inc.")]
-[assembly: AssemblyProduct("Revit Add-In Wizard Template Application")]
-[assembly: AssemblyCopyright("Copyright 2012 © Kyle Morin")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("Copyright 2013 © Kyle Morin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
