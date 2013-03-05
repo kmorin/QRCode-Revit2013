@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command QRCode-Revit2013</Text>
+    <Description>Some description for QRCode-Revit2013</Description>
+    <Assembly>QRCode-Revit2013.dll</Assembly>
+    <FullClassName>QRCode_Revit2013.Command</FullClassName>
+    <ClientId>3a1d51c4-8947-4936-a941-bc02fb333efd</ClientId>
+    <VendorId>KTM</VendorId>
+    <VendorDescription>Kyle T. Morin</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application QRCode-Revit2013</Name>
+    <Assembly>QRCode-Revit2013.dll</Assembly>
+    <FullClassName>QRCode_Revit2013.App</FullClassName>
+    <ClientId>eb796af6-26d4-4c11-bea4-d9c43812c93d</ClientId>
+    <VendorId>KTM</VendorId>
+    <VendorDescription>Kyle T. Morin</VendorDescription>
+  </AddIn>
+</RevitAddIns>
