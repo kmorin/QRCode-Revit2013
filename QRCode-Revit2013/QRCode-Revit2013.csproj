@@ -77,6 +77,7 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)QRCode-Revit2013.addin" "$(AppData)\Autodesk\Revit\Addins\2013"
-copy "$(ProjectDir)\bin\debug\QRCode-Revit2013.dll" "$(AppData)\Autodesk\Revit\Addins\2013"</PostBuildEvent>
+copy "$(ProjectDir)\bin\debug\QRCode-Revit2013.dll" "$(AppData)\Autodesk\Revit\Addins\2013"
+copy "$(ProjectDir)ThoughtWorks.QRCode.dll" "$(AppData)\Autodesk\Revit\Addins\2013"</PostBuildEvent>
   </PropertyGroup>
 </Project>
