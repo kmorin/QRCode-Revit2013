@@ -48,6 +48,8 @@ namespace QRCode_Revit2013
             ElementId viewId = _uiDoc.ActiveView.Id;
             List<CurveLoop> boundaries = new List<CurveLoop>();
             List<ElementId> frGroup = new List<ElementId>();
+            double ScaleModifier = 0.0125;
+
             //string stringbuild = "";
 
             FilteredElementCollector fec = new FilteredElementCollector(_doc)
@@ -67,10 +69,10 @@ namespace QRCode_Revit2013
                 {
                     if (matrix[j][i])
                     {
-                        XYZ start = new XYZ(j * QRCodeScale, i * QRCodeScale, 0);
-                        XYZ end = new XYZ((j + 1) * QRCodeScale, i * QRCodeScale, 0);
-                        XYZ end2 = new XYZ((j + 1) * QRCodeScale, (i + 1) * QRCodeScale, 0);
-                        XYZ end3 = new XYZ(j * QRCodeScale, (i + 1) * QRCodeScale, 0);
+                        XYZ start = new XYZ(j * (QRCodeScale*ScaleModifier), i * (QRCodeScale*ScaleModifier), 0);
+                        XYZ end = new XYZ((j + 1) * (QRCodeScale*ScaleModifier), i * (QRCodeScale*ScaleModifier), 0);
+                        XYZ end2 = new XYZ((j + 1) * (QRCodeScale*ScaleModifier), (i + 1) * (QRCodeScale*ScaleModifier), 0);
+                        XYZ end3 = new XYZ(j * (QRCodeScale*ScaleModifier), (i + 1) * (QRCodeScale*ScaleModifier), 0);
 
                         Line l = _app.Create.NewLineBound(start, end);
                         Line l1 = _app.Create.NewLineBound(end, end2);
@@ -101,7 +103,8 @@ namespace QRCode_Revit2013
             }
 
             //Group elements
-            Group group = _doc.Create.NewGroup(frGroup);
+            //Used for project documents
+                //Group group = _doc.Create.NewGroup(frGroup);
             //string groupname = new Guid().ToString();
             //group.Name = groupname.Substring(groupname.Length - 4);
             return true;
