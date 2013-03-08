@@ -30,7 +30,7 @@ namespace QRCode_Revit2013
             base.QRCodeScale = 1;
 
             _doc = doc;
-            _uiDoc = uidoc;
+            _uiDoc = uidoc;           
             _app = app;
         }
 
@@ -45,10 +45,20 @@ namespace QRCode_Revit2013
         public bool Qrfilled(string content, Encoding encoding)
         {
             ElementId typeId = null;
-            ElementId viewId = _uiDoc.ActiveView.Id;
+            ElementId viewId = null;
+            //ElementId viewId = _uiDoc.ActiveView.Id;
+            FilteredElementCollector fecDoc = new FilteredElementCollector(_doc)
+            .OfClass(typeof(View));
+
+            foreach (View v in fecDoc)
+            {
+                viewId = v.Id;
+                break;
+            }
+            
             List<CurveLoop> boundaries = new List<CurveLoop>();
             List<ElementId> frGroup = new List<ElementId>();
-            double ScaleModifier = 0.0125;
+            double ScaleModifier = 0.0026; // 1/32" size boxes
 
             //string stringbuild = "";
 
@@ -88,25 +98,14 @@ namespace QRCode_Revit2013
                         cloop.Append(c2);
                         cloop.Append(c3);
                         boundaries.Add(cloop);
-                        //stringbuild += "\nLine 1: " + start.ToString() + "," + end.ToString() +
-                        //    "\nLine 2: " + end2.ToString() +
-                        //    "\nLine 3: " + end3.ToString() +
-                        //    "\nLine end: " + end.ToString();
+
                         FilledRegion fr = FilledRegion.Create(_doc, typeId, viewId, boundaries);
                         frGroup.Add(fr.Id);
                         boundaries.Clear();
                     }
 
                 }
-                //TaskDialog.Show("s", stringbuild);
-
             }
-
-            //Group elements
-            //Used for project documents
-                //Group group = _doc.Create.NewGroup(frGroup);
-            //string groupname = new Guid().ToString();
-            //group.Name = groupname.Substring(groupname.Length - 4);
             return true;
         }
     }
