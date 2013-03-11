@@ -60,8 +60,6 @@ namespace QRCode_Revit2013
             List<ElementId> frGroup = new List<ElementId>();
             double ScaleModifier = 0.0026; // 1/32" size boxes
 
-            //string stringbuild = "";
-
             FilteredElementCollector fec = new FilteredElementCollector(_doc)
             .OfClass(typeof(FilledRegionType));
 
