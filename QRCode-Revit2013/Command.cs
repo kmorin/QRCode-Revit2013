@@ -61,6 +61,11 @@ namespace QRCode_Revit2013
 
             //save background family doc
             string dir = Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+            
+            //Clean invalid filename characters
+            string fileNameClean = CleanChars(contents);
+            _familyName += fileNameClean;
+
             string filename = Path.Combine(dir, _familyName + ".rfa");
             SaveAsOptions opt = new SaveAsOptions();
             opt.OverwriteExistingFile = true;
@@ -110,11 +115,24 @@ namespace QRCode_Revit2013
                     }
                 }
 
+                //Deprecated in 2013, but too lazy to implement new 
                 doc.Create.NewAnnotationSymbol(p,annoSymbolType,uidoc.ActiveView);
+
                 tx2.Commit();
             }
 
             return Result.Succeeded;
+        }
+
+        private string CleanChars(string contents)
+        {
+            
+            foreach (var c in System.IO.Path.GetInvalidFileNameChars())
+            {
+                contents = contents.Replace(c, '-');
+            }
+
+            return contents;
         }
 
         void GenerateQR(Document doc, QREncoder qrencoder, string contents)
