@@ -37,91 +37,106 @@ namespace QRCode_Revit2013
 
             //Prompt for Input contents
             
-            Document fdoc = app.NewFamilyDocument("C:\\ProgramData\\Autodesk\\RVT 2013\\Family Templates\\English_I\\Annotations\\Generic Annotation.rft");
-            //New Qrencoder using the family document
-            QREncoder qrcode = new QREncoder(fdoc, uidoc, app);
-            string contents = Microsoft.VisualBasic.Interaction.InputBox("Enter and text to QR encode.", "QR Encode Prompt", "", -1, -1);            
+            Document fdocX = app.NewFamilyDocument("C:\\ProgramData\\Autodesk\\RVT 2013\\Family Templates\\English_I\\Annotations\\Generic Annotation.rft");
+            //Document fdocX = app.NewFamilyDocument("C:\\ProgramData\\Autodesk\\RVT 2013\\Family Templates\\English_I\\Generic Model.rft");
 
-            if (null == fdoc)
+            //New Qrencoder using the family document            
+            QREncoder qrcode = new QREncoder(fdocX, uidoc, app);
+
+            string contents = Microsoft.VisualBasic.Interaction.InputBox("Enter and text to QR encode.", "QR Encode Prompt", "", -1, -1);
+
+            if (contents != "")
             {
-                return Result.Failed;
-            }
 
-            // Modify document within a transaction
-            using (Transaction tx = new Transaction(fdoc))
-            {
-                tx.Start("Generate QR Code");
-
-                GenerateQR(fdoc, qrcode,contents);
-                // Remove and replace in family creation document.
-                //qrcode.Qrfilled(contents);
-
-                tx.Commit();
-            }
-
-            //save background family doc
-            string dir = Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
-            
-            //Clean invalid filename characters
-            string fileNameClean = CleanChars(contents);
-            _familyName += fileNameClean;
-
-            string filename = Path.Combine(dir, _familyName + ".rfa");
-            SaveAsOptions opt = new SaveAsOptions();
-            opt.OverwriteExistingFile = true;
-            fdoc.SaveAs(filename, opt);
-            fdoc.Close(false);
-
-            //Insert new family into document
-            using (Transaction tx2 = new Transaction(doc))
-            {
-                tx2.Start("Insert QRCode");
-
-                Family fam = null;
-
-                FilteredElementCollector fec = new FilteredElementCollector(doc)
-                .OfClass(typeof(Family));
-
-                foreach (Family f in fec)
+                if (null == fdocX)
                 {
-                    if (f.Name.Equals(_familyName))
-                    {
-                        fam = f;
-                    }
-                    else
-                    {
-                        doc.LoadFamily(filename, out fam);
-                    }
+                    return Result.Failed;
                 }
 
-                FamilySymbol fs = null;
-
-                foreach (FamilySymbol symbol in fam.Symbols)
+                // Modify document within a transaction
+                using (Transaction tx = new Transaction(fdocX))
                 {
-                    fs = symbol;
-                    break;
+                    tx.Start("Generate QR Code");
+
+                    //GenerateQR(fdoc, qrcode, contents);
+                    GenerateQR(fdocX, qrcode, contents);                    
+
+                    tx.Commit();
                 }
 
-                XYZ p = uidoc.Selection.PickPoint("Please pick point to place QR code");
+                //save background family doc
+                string dir = Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
 
-                AnnotationSymbolTypeSet annoset = _doc.AnnotationSymbolTypes;
-                AnnotationSymbolType annoSymbolType = null;
+                //Clean invalid filename characters
+                string fileNameClean = CleanChars(contents);
+                _familyName += fileNameClean;
 
-                foreach (AnnotationSymbolType type in annoset)
+                string filename = Path.Combine(dir, _familyName + ".rfa");
+                SaveAsOptions opt = new SaveAsOptions();
+                opt.OverwriteExistingFile = true;
+                fdocX.SaveAs(filename, opt);
+                fdocX.Close(false);
+
+                //Insert new family into document
+                using (Transaction tx2 = new Transaction(doc))
                 {
-                    if (type.Name.Equals(_familyName))
+                    tx2.Start("Insert QRCode");
+
+                    Family fam = null;
+
+                    FilteredElementCollector fec = new FilteredElementCollector(doc)
+                    .OfClass(typeof(Family));
+
+                    foreach (Family f in fec)
                     {
-                        annoSymbolType = type;
+                        if (f.Name.Equals(_familyName))
+                        {
+                            fam = f;
+                        }
+                        else
+                        {
+                            doc.LoadFamily(filename, out fam);
+                        }
                     }
+
+                    FamilySymbol fs = null;
+
+                    foreach (FamilySymbol symbol in fam.Symbols)
+                    {
+                        fs = symbol;
+                        break;
+                    }
+
+                    
+
+                    XYZ p = uidoc.Selection.PickPoint("Please pick point to place QR code");
+                    
+                    AnnotationSymbolTypeSet annoset = _doc.AnnotationSymbolTypes;
+                    AnnotationSymbolType annoSymbolType = null;
+
+                    foreach (AnnotationSymbolType type in annoset)
+                    {
+                        if (type.Name.Equals(_familyName))
+                        {
+                            annoSymbolType = type;
+                        }
+                    }
+
+                    //Deprecated in 2013, but too lazy to implement new 
+                    doc.Create.NewAnnotationSymbol(p, annoSymbolType, uidoc.ActiveView);
+
+
+                    //doc.Create.NewFamilyInstance(p, fs, Autodesk.Revit.DB.Structure.StructuralType.NonStructural);                    
+
+                    tx2.Commit();
                 }
 
-                //Deprecated in 2013, but too lazy to implement new 
-                doc.Create.NewAnnotationSymbol(p,annoSymbolType,uidoc.ActiveView);
-
-                tx2.Commit();
+                return Result.Succeeded;
             }
-
-            return Result.Succeeded;
+            else
+            {
+                return Result.Cancelled;
+            }
         }
 
         private string CleanChars(string contents)
@@ -137,9 +152,6 @@ namespace QRCode_Revit2013
 
         void GenerateQR(Document doc, QREncoder qrencoder, string contents)
         {
-            Autodesk.Revit.Creation.FamilyItemFactory factory = doc.FamilyCreate;
-            Autodesk.Revit.Creation.Application creapp = doc.Application.Create;
-
             FilteredElementCollector fec = new FilteredElementCollector(doc)
             .OfClass(typeof(TextNote));
 
@@ -148,7 +160,10 @@ namespace QRCode_Revit2013
                 doc.Delete(e);
             }
             
-            qrencoder.Qrfilled(contents);          
+            qrencoder.Qrfilled(contents); 
+
+
+            //qrencoder.QrGeneric(contents);
         }
     }
 }
